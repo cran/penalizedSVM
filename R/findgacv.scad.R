@@ -4,10 +4,11 @@ findgacv.scad <- function(y,model){
 	
 	#make shure that y is a vector of numeric numbers! 
 	# and have values -1 and 1
-	y.gacv <- as.numeric(as.character(y))
-	y.gacv<- factor(y.gacv, levels=c(-1,1))
+	y<- factor(y, levels=c(-1,1))
+	y <- as.numeric(as.character(y))
 	
-	# scad svm mmodel
+	
+	# scad svm model
 	f<-model$f
 	
 	n = length(f)

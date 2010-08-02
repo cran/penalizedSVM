@@ -1,5 +1,7 @@
-`.calc.mult.inv_Q_mat2` <-
-function(U, D_vec, A_vec, mat2, n.thr=1000){
+.calc.mult.inv_Q_mat2 <-
+function(U, D_vec, A_vec, mat2=NULL, n.thr=500){
+
+## use always Sherman-Morrison-Woodbury formula
 #
 # calculate  new.mat = inverse_Q %*% mat2
 #   where Q: = U * D * U' + A  - quadratic matrix
@@ -9,11 +11,48 @@ function(U, D_vec, A_vec, mat2, n.thr=1000){
 	
 # NOTE : in coments '*' means matrix multiplication! 	
 	
+	require(MASS)
+	
+	
+	# if mat2 doesn't exist--> use the identity matrix with dim [nrow(U),nrow(U)]
+	if (is.null(mat2)) mat2<- diag(1, nrow=nrow(U), ncol=nrow(U))
+	
 	# if the Q matrix is not large < n.thr invert it directly
-	if (nrow(U) < n.thr ){
+	if (nrow(U) < n.thr ){ 
 		Q = U %*% diag(D_vec) %*% t(U) + diag(A_vec)
-		inv_Q<-pseudoinverse(Q)
-		nbw<-inv_Q %*% mat2
+		
+		if (rank.condition(Q)$rank == nrow(Q) & nrow(Q)==ncol(Q) ) {
+				inv_Q<-solve ( Q )
+		} else{
+				inv_Q<-pseudoinverse(Q)
+		}
+		
+		# sometimes if rank of Q is much smaller as nrow(Q) --> inv_Q consists only NAs.
+		# then use Sherman-Morrison-Woodbury formula
+		if (all(is.na(inv_Q) ) == TRUE ) {
+			nbw<-.calc.mult.inv_Q_mat2 (U=U, D_vec=D_vec, A_vec=A_vec, mat2=mat2, n.thr=0)
+		}else{
+			nbw<-inv_Q %*% mat2
+		}
+#		## test
+#		summary(nbw)
+#			
+#		inv_Q<-ginv(Q)
+#		nbw.ginv<-inv_Q %*% mat2
+#		summary(nbw.ginv)
+#		
+#		
+#		inv_Q<-pseudoinverse(Q)
+#		nbw.p<-inv_Q %*% mat2
+#		summary(nbw.p)
+#		
+#		
+#		inv_Q<-solve(Q)
+#		nbw.s<-inv_Q %*% mat2
+#		summary(nbw.s)
+#		
+#		
+#		###end of test 
 		
 	}else{
 		# apply Sherman-Morrison-Woodbury formula
@@ -36,7 +75,8 @@ function(U, D_vec, A_vec, mat2, n.thr=1000){
 			
 			A<-diag(A_vec)
 			D<-diag(D_vec)
-			inv_U<-pseudoinverse(U) 
+			inv_U<-pseudoinverse(U)  # can not apply solve to a not-square matrix!!
+			
 			
 			#inv_Q <- t(inv_U) %*% diag(1/D_vec)  %*% inv_U  
 			# nbw<-inv_Q %*% mat2
@@ -49,7 +89,7 @@ function(U, D_vec, A_vec, mat2, n.thr=1000){
 			# inv(A + U*D*U') =  inv(A)- inv(A)* U * inv( inv(D) + U'*inv(A)*U ) * U' * inv(A)
 			#term1 -  term2
 						
-			# inverse of a diagonal matrix = inv( diag(d1, d2,0,...) ) = diag(1/d1, 1/d2,0,...)
+			# inverse of a diagonal matrix = inv( diag(d1, d2,...) ) = diag(1/d1, 1/d2,...)
 			
 			# now for nbw
 			#  nbw<-inv_Q %*% mat2  
@@ -59,11 +99,12 @@ function(U, D_vec, A_vec, mat2, n.thr=1000){
 			# vecmat(v,M) is equivalent to diag(v) %*% M but is faster to execute. 
 			# DO NOT need to storage a HUGE diagonal matrix
 			
-			# A is a diagonal matrix with some zeros on the diagonal.
-			# define new A: A1 := A+ eps*I, eps = 10^-8
+			# A is a diagonal matrix with some zeros on the diagonal. replace 0 with eps
+			# define new A: A1 := A+ eps*I for A elements =0, eps = 10^-8
 			
 			eps<-10^-8 
-			A1_vec<-A_vec+ eps
+			A1_vec<-A_vec
+			A1_vec[A1_vec==0]<-  eps
 			inv_A1_vec <- 1/ A1_vec
 			
 			# 1. nbw.term1 inv(A) *  mat2
@@ -72,327 +113,42 @@ function(U, D_vec, A_vec, mat2, n.thr=1000){
 			# 2. nbw.term2  = inv(A)* U * inv( inv(D) + U'*inv(A)*U ) * U' * inv(A) * mat2
 					# tt1 =  inv( inv(D) + U'*inv(A)*U )
 					# nbw.term2 =   inv(A)* U * tt1 * U' * inv(A) * mat2
-			tt1<-pseudoinverse ( diag(1/D_vec) + matvec(t(U), inv_A1_vec )%*% U )
+			
+			# sometimes problem with  pseudoinverse  Error in La.svd(x, nu, nv) : error code 1 from Lapack routine 'dgesdd'
+			#tt1<-pseudoinverse ( diag(1/D_vec) + matvec(t(U), inv_A1_vec )%*% U )
+			## Solution1: apply solve 
+			if (exists("tt1")) {rm(tt1)} 
+						
+			tmp.mat<-diag(1/D_vec) + matvec(t(U), inv_A1_vec )%*% U 
+			
+			# if the matrix tmp.mat has the full rank --> use 'solve' 
+			if (rank.condition(tmp.mat)$rank == nrow(tmp.mat) &  nrow(tmp.mat)==ncol(tmp.mat) ) {
+					try(tt1<-solve ( tmp.mat ))
+			}						
+			
+			# if 'solve' fails --> use 'pseudoinverse' / 'ginv'			
+			if (!exists("tt1")) try(tt1<-pseudoinverse (tmp.mat ))
+			
+			if (!exists("tt1")) try(tt1<-ginv ( tmp.mat))
+			
+			if (!exists("tt1")) stop("Error: can not calculate inverse matix for 'diag(1/D_vec) + matvec(t(U), inv_A1_vec )%*% U'")
+			 
+			## Solution2: apply Sherman-Morrison-Woodbury formula again   --> doesn't make a lot od sense ,since we are back to the high dim! nrow(U)
+			
 			# to improve calculation's speed --> use ()
 			nbw.term2 <- vecmat(inv_A1_vec, U) %*% ( tt1 %*% ( matvec(t(U), inv_A1_vec) %*% mat2 ) )
 			
 			nbw<- nbw.term1 - nbw.term2
-		}
-	}
+		} # end of the case 2
+	
+	} #	end of if (nrow(U) < n.thr )
 	return(nbw)
 }
 
 
-`.core` <-
-function(A,d,nu,delta, epsi, tol=10^(-3), alpha=10^3, maxiter=50){
-	
-	num.samp<-dim(A)[1]
-	num.clones<-dim(A)[2]
-	
-	m<-dim(A)[1]
-	n<-dim(A)[2]
-	en<- matrix(rep(1, n))
-	em<- matrix(rep(1, m))
-	
-	#initial u
-	u=matrix(rep(1, m));
-	iter=0;
-	epsi=epsi*em;
-	nu=nu*em;
-	diff=1;
-	#DA=spdiags(d,0,m,m)*A;  * matrix multiplication 
-	# A = spdiags(B,k,m,n) creates an m-by-n sparse matrix by taking the columns of B and placing them along the diagonals specified by k.
-	# d a matrix, set the columns' values into the main diagonal (k=0), (k <0 below  and k>0 above the main diaganal)
-	#  spdiags(d,0,m,m) <=> create m*m matrix with elements of d in the main diagonal -> diag(as.vector(d)) !!!!!
-	DA<- vecmat(as.vector(d), A )  
-	
-	while ( (diff>tol) & (iter<maxiter) ){
-		# Stop if ||u -  u_old || <= tol or i = imax. Else, set i = i +1, a = 2a and  run i+1 iteration 
-		uold <-u;
-		iter <- iter+1;
-		if (iter >1) alpha<- 2*alpha
-		
-		du=d*u;
-		Adu=t(A) %*% du;
-		# replase negative values by 0
-		pp=Adu-en; pp[pp<0]<-0 # positive
-		np=-Adu-en; np[np<0]<- 0 # negative 
-		# sum of matrix = apply(matrix, 2, sum) !!!! 
-		#dd=sum(du)*d;unu=max(u-nu,0);uu=max(-u,0);
-		dd=sum(du)*d;
-		unu=u-nu; unu[unu <0]<- 0;
-		uu=-u; uu[uu <0]<- 0 
-		#Gradient
-		g= -epsi+(d*(A %*% pp))-(d*(A%*%np))+dd+unu-alpha*uu;
-		#Hessian
-		E_vec<- sqrt(sign(np)+sign(pp))
-		H=cbind(matvec(DA,E_vec), d);
-		
-		f=as.vector(delta+sign(unu)+alpha*sign(uu) )
-		
-		#if the Q matrix is not large:  num pat < num clones = n.thr invert it directly
-		# else apply  SMW FORMula
-				# see Feature SelectionSforSVMC_05204tt_1normSVM.ppt, slide 20 
-				# use SMW FORMula : invert a quadratic matrix Q: = U * D * U' + A  
-		
-		if (num.samp>= num.clones){ 
-		#with_smw(A,d,nu,delta, epsi=epsi)
-			inv_Q<- .find.inverse(U=H, D_vec=rep(1,n+1), A_vec=f, n.thr=1000)
-		}else {
-			# calulate Q_1 directly
-			F<- diag(f)
-			Q = H %*% t(H)+F
-			# TODO why?
-			# 1 time: error Error in La.svd(x, nu, nv) : error code 1 from Lapack routine 'dgesdd'
-			# versuche es abzufangen!
-			# sometimes inv_Q = only NA'S !!!! or gives as output empty model
-			inv_Q<- pseudoinverse(Q) 
-		}
-		
-		if(  all(is.na(inv_Q)) ) {
-			# exit the loop
-			diff<- tol; flag.failed<- TRUE
-		}else{
-			flag.failed<- FALSE
-			#di=-((H*H'+F)\g);
-			di <- (-1)* (inv_Q %*% g )
-			u=u+di;
-			#diff<- sqrt( sum( (g)^2 ) )
-			diff<- sqrt( sum( (u-uold)^2 ) )
-		}
-	}
-	
-	du=d*u;
-	Adu=t(A)%*%du;
-	pp=Adu-en; pp[pp<0]<-0 # positive
-	np=-Adu-en; np[np<0]<- 0 # negative 
-	
-	w=1/epsi[1]*(pp-np);
-	gamma=-(1/epsi[1])*sum(du);
-	# adapt w: skip all 0!  
-  xind<- which(!(w==0))
-  w<-w[xind ,]
-  # if only one w !=0,  give the name manually
-  if (length(xind) == 1 ) names(w)<- colnames(A)[xind]
-	
-	if (!flag.failed) {	List<-list(w=w,gamma=gamma,xind=xind,epsi=epsi[1],delta=delta, tol=tol, iter=iter)
-	} else 	List<- NULL
-
-	return(List)
-}
-
-`.correctness` <-
-function(AA,dd,w,gamma){
-	p=sign(AA %*%w-gamma)
-	corr=sum(p==dd)/nrow(AA)*100;
-	return(corr)
-}
-
-`.create.covariance.matrix` <-
-function(sd.pos, sd.neg, sd.bal,
-																			ng,nsg, pos.nsg, neg.nsg,
-																			corr,corr.factor, 
-																			blocks, n.blocks, nsg.block, ng.block){
-	# initialise covariance matrix sigma
-	sigma<- diag(ng)
-	dimnames(sigma)<- list(c(1:ng), c(1:ng))
-	
-	# 1.  no correlation: sigma:= I 
-	if (!corr){
-		# first pos, then neg sig. genes, then balanced
-		rownames(sigma)<- c( paste("pos",c(1:pos.nsg),sep=""), 
-		paste("neg",c(1:neg.nsg),sep=""),
-		paste("bal",c(1:(ng-nsg)),sep="") )
-	}
-	# 2. correlation & no blocks (sign + non-sig genes)
-	if (corr & !blocks){
-		# correlation, no blocks with non-sg genes
-		# --> first "positive block", then "negative" then "balanced"
-		#  each block: diag=1, cov(i,j)=cov(j,i):=cor.factor^|i-j|
-		
-		# first pos, then neg sig. genes, then balanced
-		rownames(sigma)<- c( paste("pos",c(1:pos.nsg),sep=""), 
-		paste("neg",c(1:neg.nsg),sep=""),
-		paste("bal",c(1:(ng-nsg)),sep="") )
-		
-		.help.cor.block<- function(len, corr.factor){
-			# each block: diag=1, cov(i,j)=cov(j,i):=cor.factor^|i-j|
-			tmp.sigma<-diag(len)
-			diag(tmp.sigma)[grep("pos",rownames(tmp.sigma))]<- sd.pos^2 		
-			diag(tmp.sigma)[grep("neg",rownames(tmp.sigma))]<- sd.neg^2 		
-			diag(tmp.sigma)[grep("bal",rownames(tmp.sigma))]<- sd.bal^2 		
-			
-			for(row.i in 1:(len-1))
-			 for(col.j in (row.i+1):len)
-				tmp.sigma[row.i,col.j] <- tmp.sigma[col.j,row.i] <- corr.factor^abs(row.i-col.j) * sqrt(tmp.sigma[row.i,row.i])  *  sqrt(tmp.sigma[col.j,col.j])
-			return(tmp.sigma)
-		}
-		
-		# pos sig genes
-		if (pos.nsg>0){
-			sigma[1:pos.nsg, 1:pos.nsg]<- .help.cor.block(len=pos.nsg, corr.factor = corr.factor )
-			rownames(sigma)[1:pos.nsg]<- paste("pos",c(1:pos.nsg),sep="")
-		}
-		# neg sig genes
-		if (neg.nsg>0){
-			sigma[(pos.nsg+1):(pos.nsg+neg.nsg), (pos.nsg+1):(pos.nsg+neg.nsg)]<-  .help.cor.block(len=neg.nsg, corr.factor = corr.factor )
-			rownames(sigma)[(pos.nsg+1):(pos.nsg+neg.nsg) ]<- paste("neg",c(1:neg.nsg),sep="")
-		}
-		# bal genes
-		if ((ng-nsg)>0){
-			sigma[((pos.nsg+neg.nsg)+1): ng, (pos.nsg+neg.nsg+1): ng]<-  .help.cor.block(len=(ng-nsg), corr.factor = corr.factor )
-			rownames(sigma)[((pos.nsg+neg.nsg)+1): ng ]<- paste("bal",c(1:(ng-nsg) ),sep="")
-		}
-	}
-	# 3. correlation & blocks (sign + non-sig genes)
-	if (corr & blocks){
-		# ith block: first nsg.block sign. genes then (ng.block-nsg.block) bal genes
-		# diag = 1, rest = corr.factor
-		# rest = diag 1
-		
-		# cov(i,j)= cor.factor* sd(i)*sd(j)
-		# tricky if sd_pos , sd_neg and sd_bal are different 
-		
-		# 1. first find position of each gene
-		
-		for (i in 1:n.blocks){
-			bl.start<-(i-1)*ng.block+1
-			bl.end<- i*ng.block
-			# add rownames
-			rownames(sigma)[bl.start : bl.end]<- c( paste("sig",c( ((i-1)*nsg.block + 1) : (i*nsg.block) ) ,sep=""), 
-														 paste("bal",c( ((i-1)*(ng.block-nsg.block) + 1) : (i*(ng.block-nsg.block)) ),sep="") )
-		}
-		# do we have some sg left? if not -> 0.
-		sg.rest<- max (nsg - nsg.block * n.blocks, 0 )
-		if (sg.rest > 0 ) rownames(sigma)[((ng.block * n.blocks) +1): (ng.block * n.blocks+sg.rest)]<- 
-																		paste("sig",c( ( nsg.block * n.blocks  + 1) : (nsg) ) ,sep="")
-																			
-		# do we have some bal left?
-		bal.rest<- max( ( (ng-nsg) -  ((ng.block-nsg.block) * n.blocks)  ), 0 )
-		if (bal.rest > 0 ) rownames(sigma)[((ng.block * n.blocks)+sg.rest +1): (ng)]<- paste("bal",c( (((ng.block-nsg.block) * n.blocks) + 1) : (ng-nsg) ) ,sep="")
-		
-		# correct the names for sig genes: sig --> first pos then neg
-		rownames(sigma)[grep("sig",rownames(sigma)) ]<- c( paste("pos",c(1:pos.nsg),sep=""), 
-		paste("neg",c(1:neg.nsg),sep="") )
-		colnames(sigma)<- rownames(sigma)	
-		
-		
-		# 2. fill the blocks	
-			
-		for (i in 1:n.blocks){
-			bl.start<-(i-1)*ng.block+1
-			bl.end<- i*ng.block
-			block.i<- sigma[bl.start : bl.end, bl.start : bl.end]
-			
-			# fill the diagonal with sd_pos, sd_neg, sd_bal
-			diag(block.i)[grep("pos",rownames(block.i))]<- sd.pos^2 		
-			diag(block.i)[grep("neg",rownames(block.i))]<- sd.neg^2 		
-			diag(block.i)[grep("bal",rownames(block.i))]<- sd.bal^2 		
-			
-			# fill the rest
-			# cov(i,j)= cor.factor* sd(i)*sd(j)
-			for (row.i in 1:(nrow(block.i)-1))
-				for (col.j in (row.i+1):ncol(block.i)){
-					block.i[row.i, col.j]<- block.i[col.j,row.i]<- corr.factor * sqrt(block.i[row.i,row.i])  *  sqrt(block.i[col.j,col.j])
-				}
-			sigma[bl.start : bl.end, bl.start : bl.end]<- block.i
-		}
-		
-		# user-fiendly reading: sigma.read<-sigma; sigma.read[sigma.read==0]<- ""; sigma.read[1:50,1:50];     rm(sigma.read)
-	}
-	# do we need this simplification?
-	# # if cov < 10^-3 set it to 0! (memory space reduction!)
-	# sigma[sigma< 10^-3]<- 0
-	return(sigma)
-}
-
-`.EstNuLong` <-
-function( C,d) {
-	
-	m<-dim(C)[1]
-	n<-dim(C)[2]
-	e<- rep(1, m)
-	
-	# H = [] erzeugen einer neuen Matrix
-	# H=[C -e]; 
-	H <- cbind(C, (-1)*e) 
-	if ( m<201){
-	H2=H;	d2=as.matrix(as.numeric(as.character(d)));
-	}else{
-		# rand(n,m) erzeugt eine  nxm - Matrix mit gleichförmig verteilten Zufallszahlen zwischen 0 und 1
-		#r=rand(m,1);
-		r<- matrix(runif(m),m, 1)
-		# [s1,s2]=sort(r); ### s1, sorted vector, s2 - order(r); 
-		s1<-sort(r)
-		s2<-order(r)
-		# take the first 200 clones from random order 
-		H2=H[s2[1:200],];
-		d2=as.matrix(d[s2[1:200]]);
-	}
-
-	lamda<-1;
-	#[vu,u]=eig(H2 %*% t(H2));
-	# [V,D] = eig(A) produces matrices of eigenvalues (D) and eigenvectors (V) of matrix A, so that A*V = V*D. 
-	tt<- eigen(H2 %*% t(H2))
-	vu <- tt$vectors
-	u<- tt$values
-	p=length(u)
-	
-	yt=t(d2)%*% vu;
-	lamdaO=lamda+1;
-	
-	cnt<-0
-	while ( (abs(lamdaO-lamda)>10e-4) & (cnt<100)) {
-		cnt=cnt+1;
-		nu1<-0; pr<-0; ee<-0; waw<-0;
-		lamdaO<-lamda;
-		for (i in 1:p){
-			nu1= nu1 + lamda/(u[i]+lamda);
-			pr= pr + u[i]/(u[i]+lamda)^2;
-			ee= ee + u[i]*yt[i]^2/(u[i]+lamda)^3;
-			waw= waw + lamda^2*yt[i]^2/(u[i]+lamda)^2;
-		} 
-		lamda=nu1*ee/(pr*waw);
-	}
-	value <- lamda
-	
-	if (cnt==100) value<-1 
-	return(value)
-}
-
-`.EstNuShort` <-
-function(C,d){
-		# easy way to estimate nu if not specified by the user
-	#	value = 1/(sum(sum(C.^2))/size(C,2));
-	# size = dim ; 
-	# C^2 = C %*% C  (matrix multiplication), 
-	# .^ Potenzierung C.^2 = C * C = C^2 (elementerweise !)
-		value = 1/(sum(sum(C^2))/ncol(C));    
-		return( value)
-}
-
-`.extend.to.quad.matrix` <-
-function (mat){
-	# extend to quadratic matrix
-	# mat - matrix
-	mat.names<- sort(unique(unlist(dimnames(mat))))
-	#do we have all rows / columns?
-	flag.row<-  mat.names %in% rownames(mat)
-	flag.col<- mat.names %in% colnames(mat)
-	
-	mat.ext<-matrix(0, length(mat.names), length(mat.names) )
-	rownames(mat.ext)<-colnames(mat.ext)<- mat.names	
-	# fill extended matrix
-	for (Row in rownames(mat)){
-		for( Col in colnames(mat)){
-			mat.ext[which(rownames(mat.ext) == Row),which(colnames(mat.ext) == Col)]<-mat[Row,Col]
-		}
-	}
-return(mat.ext)
-}
 
 `.find.inverse` <-
-function(U,D_vec,A_vec, n.thr=1000){
+function(U,D_vec,A_vec, n.thr=500){
 ### invert a quadratic matrix Q: = U * D * U' + A  
 # D, A diag matrix, input as diag vectors
 	
@@ -583,151 +339,7 @@ c(403L, 200L, -764817312L, -1954253149L, -1164856895L, 316951984L,
 1522650929L, 710696867L, -49481820L, 980656722L, -1713374809L, 
 1783868913L, 1095342390L, 1049817556L, -1426630811L, -1239169169L, 
 -1846400600L, 2055394584L)
+
 `.required` <-
-c("corpcor", "statmod", "MASS", "e1071")
-`.run.cv` <-
-function(x,y, fs.method, cross.outer,lambda1.set=NULL, class.weights, seed=123){
-
-	nn<- nrow(x)
-	nlevels.class<- nlevels(as.factor(y)) 
-	levels.class <- levels(as.factor(y))
-	
-	if (cross.outer > nn | cross.outer < 2)  stop(paste("You have to specify at	least two different groups and not more than", nn))
-	the.cut <- cut(1:nn,	cross.outer, 1:cross.outer) 
-	# set seed 
-	if (!is.null(seed)) set.seed(seed)
-	
-	# vote matrix 		
-	votal.matrix <- matrix(0, ncol = nlevels.class, nrow = nn)
-	the.vector.of.all.parameters <- vector(length = 0, mode = "list")
-	model.info.list <- list()
-	
-	# maybe will implement in the future 		# several starts, like in 	MCRestimate # 
-	#for (l in 1:cross.repeat) { 
-	
-	the.votes.per.cv <- matrix(NA, 	ncol = nlevels.class, nrow = nn) 
-	rownames(the.votes.per.cv) <- y
-	#rownames(the.votes.per.cv) <- names(y) 
-	colnames(the.votes.per.cv) <- levels.class
-	
-	the.cut.list<- list() 	
-	for (i in levels.class){ 
-		the.cut.list[[i]] <- 	cut(1:sum( y == i ), cross.outer, 1:cross.outer) } 
-	print("the.cut.list")
-	print(the.cut.list)
-	
-	# permute in each class separatly 	
-	perm.list<- lapply(the.cut.list, function (class.elems) sample (class.elems, length(class.elems))   )
-	
-	permutated.cut<- rep (NA, length(y))
-	names(permutated.cut)<- names(y) 
-	for (i in 1:length(perm.list)){ 
-		permutated.cut[which(y == names(perm.list)[i] )]<- perm.list[[i]] 
-	}
-	
-	#################################### 	
-	# do cv (change sample --> sample.i)
-	#################################### 
-	for (sample.i in 1:cross.outer) {
-		print(paste("cv step ",sample.i, "of", cross.outer )) 
-		print("")
-		block <- 	permutated.cut == sample.i
-		train.matrix <- x[!block,, drop = FALSE]
-		test.matrix <- x[ block, , drop = FALSE] 
-		train.factor <- y[!block]
-		test.factor<- y[block]
-		table(train.factor)
-		table(test.factor)
-		
-		### 1norm ###########################################################
-		if (fs.method=="1norm"){# 1norm svm nu = EstNuShort(train.matrix,		train.factor) 
-			
-			# 1. construct model 
-			#		epsi - tuning parameter !
-			#		find the best epsi via k-fold cv,  get the finla model with optimal epsi
-			f.final<-run.1norm(x=train.matrix,y=train.factor,k=5,nu=0, output=1, seed=seed)
-		
-			# 2. prediction (still in cv) : use test.matrix, test.factor
-			predict.list<-predict(object=list(f.final=f.final),newdata=test.matrix, newdata.labels=as.factor(test.factor) )
-			
-			model.info<-list(class=test.factor,
-										pred.class= predict.list$pred.class,
-										tab=predict.list$tab, 
-										accurancy =1- predict.list$error, 
-										nu =f.final$nu,
-										w =f.final$w, 
-										b= f.final$b,
-										lam.opt= f.final$epsi)
-		}	#end of 1norm svm for cv step
-			
-		### scad ###########################################################
-		if (fs.method=="scad"){ 
-			# scad for cv step # 1.do scv scad  + gacv --> 		optimal lambda # 2. prediction
-			
-			# 1.do scv scad  + gacv --> optimal lambda 			ff.list<-list()
-			f.final<-run.scad(x=train.matrix, y=train.factor, lambda1.set=lambda1.set, class.weights=class.weights)
-		
-			# 2. prediction (still in cv) : use test.matrix, test.factor
-			predict.list<-predict(object=list(f.final=f.final),newdata=test.matrix, newdata.labels=as.factor(test.factor) )
-			
-			model.info<-list(class=test.factor, 
-											pred.class= predict.list$pred.class,		
-											tab=predict.list$tab, 
-											accurancy =1 - predict.list$error, 
-											w =f.final$w,
-											b = f.final$b,
-											lam.opt = f.final$lam.opt)
-		}		# end of scad svm for cv step
-			
-	
-			
-			model.info.list[[ sample.i]] <- model.info 
-			rm( model.info)
-			
-			pred.vector <- 	predict.list$pred.class 
-			vote.matrix <- t(sapply(1:length(pred.vector), 	function(j) as.numeric(levels.class == pred.vector[j])))
-			colnames(vote.matrix) <- levels.class 
-			the.votes.per.cv[block, ] <- 		vote.matrix
-			
-	} # end of cv
-	
-	votal.matrix <- votal.matrix + the.votes.per.cv 		# creating  the confusion table 
-	res <- .whatiscorrect(votal.matrix)
-	
-	vote.table <- table(rownames(votal.matrix), res$best.vote) 	
-	new.table <- 	matrix(0, 
-											ncol=nrow(vote.table), 
-											nrow=nrow(vote.table),
-											dimnames=list(rownames(vote.table),rownames(vote.table)))
-	new.table[,colnames(vote.table)] <- vote.table
-	
-	normed.table <- new.table/rowSums(new.table) 		
-	confusion <- cbind(new.table, 1-diag(normed.table)) 
-	colnames(confusion) <- 	c(levels(as.factor(y)), "class error")
-	
-	res.cv<- list(vote.table=vote.table,
-								res= res,
-								normed.table =normed.table,
-								confusion =confusion,
-								model.info.list = model.info.list)
-	
-	return(res.cv)
-}
-
-`.whatiscorrect` <-
-function(votematrix) {
-  correct.class.vote <- numeric(nrow(votematrix))
-  correct.prediction <- logical(nrow(votematrix))
-  best.vote          <- character(nrow(votematrix))
-  for(i in 1:nrow(votematrix)) {
-    correct.class.vote[i] <- votematrix[i, rownames(votematrix)[i]==colnames(votematrix) ]
-    correct.prediction[i] <- rownames(votematrix)[i] %in% colnames(votematrix)[votematrix[i,]==max(votematrix[i,])]
-   best.vote[i] <- ifelse(correct.prediction[i],
-                          rownames(votematrix)[i],
-                          colnames(votematrix)[which.max(votematrix[i,])])
-  }
-  return(list(correct.class.vote=correct.class.vote,
-              correct.prediction=correct.prediction,
-              best.vote=best.vote))
-}
+c("corpcor", "statmod", "MASS", "e1071", "mlegp", "tgp", "lhs")
 

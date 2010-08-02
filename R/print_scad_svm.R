@@ -1,4 +1,4 @@
-`print.scadsvm` <-
+`print.scad.svm` <-
 function(x,...){
 	cat("\nSCAD-SVM\n")
 	cat("\nBias = ", x$b)

@@ -1,9 +1,10 @@
-predict.penSVM<-function(object, newdata, newdata.labels=NULL,...){
+predict.penSVM<-function(object, newdata, newdata.labels=NULL,labels.universe=NULL, ...){
 	# calculate test error, confusion table, sensitivity and specificity for test data
 	# input:
 	# newdata: matrx of ratios, rows - samples, columns - clones
 	# newdata.labels - vector of classes for samples
 	# object - fit of trained data (producedby svm.fs) 
+	# labels.universe: important for models produced by loocv: all possible labels in the particular data set
 	 	
 	pred.class<- NULL
 	tab.classes<- NULL
@@ -14,13 +15,13 @@ predict.penSVM<-function(object, newdata, newdata.labels=NULL,...){
 	# fit model 	
 	f<-object$model	
 	# if we have a model, calulate the test error...
-	if (is.null(f))  {
+	if (length(f)<=1 )  {
 		stop("Model is empty!")
 	}else {
 		# 2 different data possible: for GENES and for CLASSES (here only for classes)
 		
-		# separating line: x'w = gamma or x'w = b
-		sep = as.matrix(newdata)[,f$xind, drop=FALSE] %*% f$w - f$b
+		# separating line: x*w+b=f(x)
+		sep = as.matrix(newdata)[,f$xind, drop=FALSE] %*% f$w + f$b
 		
 		# for classes -1 and 1 :  class = 2*(sep > 0) - 1
 		pred.class = factor(2*as.numeric (sep > 0) -1)
@@ -29,10 +30,20 @@ predict.penSVM<-function(object, newdata, newdata.labels=NULL,...){
 		
 			# missclassification table for CLASSES		
 			tab.classes<-table(pred.class, newdata.labels)
+			
+					
 		
 		# 3. sensitivity and specificity  for CLASSES
 		if (!is.null(tab.classes)){
-			if (!nrow(tab.classes)== ncol(tab.classes)) 	  tab.classes<-.extend.to.quad.matrix (tab.classes)
+			# if in test only one sample --> extend tab.classes to complete labels to  labels.universe	
+			# example : 
+			#tab.classes
+      #    newdata.labels
+			#pred.class 1
+      #   1 1
+			# labels.universe= c("-1","1")
+		
+			if (nrow(tab.classes)!= ncol(tab.classes) | nrow(tab.classes)== 1 ) 	  tab.classes<-.extend.to.quad.matrix (tab.classes, labels.universe=labels.universe)
 			# sensitivity = TP/ all P = TP /(TP + FN)
 			sensitivity.classes<- tab.classes[2,2]/sum(tab.classes[,2])
 			# specificity = TN/ all N = TN /(TN + FP)
@@ -44,6 +55,7 @@ predict.penSVM<-function(object, newdata, newdata.labels=NULL,...){
 	}# end of  if (!is.null(newdata.labels))
 	
 	return(list(pred.class = pred.class,
+							fitted=sep,
 							tab=tab.classes,
 							error=error.classes,
 							sensitivity=sensitivity.classes,

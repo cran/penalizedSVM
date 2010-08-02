@@ -14,8 +14,8 @@ availible up to now. Other functions will be implemented in the near feature.
 \tabular{ll}{
 Package: \tab penaltySVM\cr
 Type: \tab Package\cr
-Version: \tab 1.0\cr
-Date: \tab 2008-12-15\cr
+Version: \tab 1.1\cr
+Date: \tab 2010-08-02\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 }

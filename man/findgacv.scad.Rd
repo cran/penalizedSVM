@@ -5,7 +5,7 @@
 
 \description{
  calculate generalized approximate cross validation error (GACV) estimation 
- for SCAD SVM Model}
+ for SCAD SVM model}
 
 \usage{
 findgacv.scad(y, model)
@@ -42,7 +42,7 @@ print(str(train))
 	
 # train data	
 ff <- scadsvc(as.matrix(t(train$x)), y=train$y, lambda=0.01)
-print(ff)
+print(str(ff))
 
 # estimate gacv error
 (gacv<- findgacv.scad(train$y, model=ff))

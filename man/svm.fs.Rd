@@ -2,50 +2,84 @@
 
 \alias{svm.fs}
 \alias{svm.fs.default}
-\alias{run.scad}
-\alias{run.1norm}
+\alias{DrHSVM}
+\alias{scad_L2.svc}
 
 
 \title{  Fits  SVM mit variable selection using penalties.}
 \description{
-  Fits  SVM with variable selection (clone selection) using penalties SCAD and L1 norm.
+  Fits  SVM with variable selection (clone selection) using penalties SCAD,  L1 norm, Elastic Net (L1 + L2 norms) and ELastic SCAD (SCAD + L1 norm). 
+  Additionally tuning parameter search is presented by two approcaches: fixed grid or interval search. 
 }
 \usage{
-\method{svm.fs}{default}(x, y, fs.method = "1norm", cross.outer = 0, lambda1.set, lambda2.set = NULL, calc.class.weights = FALSE, seed = 240907, maxIter = NULL,...)
-run.scad(x,y,  lambda1.set=NULL, class.weights)
-run.1norm(x,y,k=5,nu=0, lambda1.set=NULL, output=1, seed=seed)
-
-
+\method{svm.fs}{default}(
+				x,
+				y, 
+				fs.method = c("scad", "1norm", "scad+L2", "DrHSVM"),
+				### tuning parameter settings
+				# chose the search method for tuning lambda1,2: 'interval' or 'discrete'
+				grid.search=c("interval","discrete"),
+				#fixed grid for lambda1, lambda2
+				lambda1.set=NULL,  
+				lambda2.set=NULL,
+				# define range for lambda1,2 for interval search
+				bounds=NULL, 
+				# parms.coding="none" or "log2"
+				parms.coding= c("log2","none"),
+				# internal parameter for DIRECT
+				maxevals=500, 
+				### valuidation settings
+				# fot nested validation, 'cross.outer'-fold cv
+				#cross.outer= 0,
+				# method for the inner validation: cross validation, gacv   
+				inner.val.method = c("cv", "gacv"),
+				# 'cross.inner'-fold cv
+				cross.inner= 5,
+				# show plots in Direct?
+				show= c("none", "final"),
+				### other  settings
+				# internal parameter for svm
+				calc.class.weights=FALSE,
+				class.weights=NULL, 
+				#seed
+				seed=123, 
+				# max iterations for the feature selection svm method
+				maxIter=700, 
+				# verbose?
+				verbose=TRUE,
+				...)
 }
+
+
 \arguments{
   \item{x}{ input matrix with genes in columns and samples in rows!  }
-  \item{y}{ vector of class labels }
-  \item{fs.method}{ feature selection method. Availible 'scad' and '1norm' }
+  \item{y}{ numerical vector of class labels, -1 , 1 }
+  \item{fs.method}{ feature selection method. Availible 'scad',  '1norm' for 1-norm,  "DrHSVM" for Elastic Net and "scad+L2" for Elastic SCAD }
+  \item{grid.search}{ chose the search method for tuning lambda1,2: 'interval' or 'discrete', default: 'interval'}
+  \item{lambda1.set}{ for fixed grid search: fixed grid for lambda1, default: NULL  }
+  \item{lambda2.set}{ for fixed grid search: fixed grid for lambda2, default: NULL  }
+  \item{bounds}{ for interval grid search: fixed grid for lambda2, default: NULL  }
+  \item{parms.coding}{ for interval grid search: parms.coding: none or log2  , default: log2  }
+  \item{maxevals}{ the maximum number of DIRECT function evaluations, default: 500.   }
   \item{cross.outer}{ fold of outer cross validation, default is 0, no cv.     }
-  \item{lambda1.set}{ set of tuning parameters lambda1 }
-  \item{lambda2.set}{ set of tuning parameters lambda2, not yet in use }
   \item{calc.class.weights}{ calculate class.weights for SVM, default: FALSE }
   \item{class.weights}{ a named vector of weights for the different
     classes, used for asymetric class sizes. Not all factor levels have
     to be supplied (default weight: 1). All components have to be named.  }
-  \item{k}{ k-fold cross validation, default: 5 }
- \item{nu}{ nu:  weighted parameter
-  								\itemize{
-                  \item  1 - easy estimation, 
-                  \item  0 - hard estimation, 
-                  \item any other value  - used as nu by the algorithm, default - 0. 
-                  }
-            }   
-  \item{output}{ 0 - no output, 1 - produce output, default is 0 }
+  \item{inner.val.method}{ method for the inner validation: cross validation, gacv , default cv  }
+  \item{cross.inner}{ 'cross.inner'-fold cv, default: 5 }
+  \item{show}{ for interval search: show plots of  DIRECT algorithm:    none, final iteration, all iterations. Default: none  }
   \item{seed}{ seed }
-  \item{maxIter}{ maximal iteration, default: not used yet  }
-  \item{...}{ additional argument(s) }
+  \item{maxIter}{ maximal iteration, default: 700 }
+  \item{verbose}{ verbose?, default: TRUE }
+  \item{\dots}{ additional argument(s) }
 }
 
 \details{
   The goodness of the model is highly correlated with the choice of tuning parameter lambda.
   Therefore the model is trained with different lambdas and the best model with optimal tuning parameter 
   is used in futher analysises.
+  For very small lamdas is recomended to use maxIter, otherweise the algorithms is slow or might not converge.
   
   The Feature Selection methods are using different techniques for finding optimal tunung parameters
   By SCAD SVM Generalized approximate cross validation (gacv) error is calculated for each pre-defined tuning parameter. 
@@ -78,12 +112,8 @@ run.1norm(x,y,k=5,nu=0, lambda1.set=NULL, output=1, seed=seed)
 } 
 
 \references{ 
-
-Zhang, H. H., Ahn, J., Lin, X. and Park, C. (2006). \emph{ Gene selection using
-support vector machines with nonconvex penalty.} Bioinformatics, \bold{22}, pp. 88-95. 
-
-Fung, G. and Mangasarian, O. L. (2004).  \emph{ A feature selection newton method for 
-support vector machine classification.} Computational Optimization and Applications Journal, \bold{28(2)}, pp. 185-202.   
+Becker, N., Werft, W., Toedt, G., Lichter, P. and Benner, A.(2009) PenalizedSVM: a R-package for feature selection SVM classification, 
+Bioinformatics, 25(13),p 1711-1712
 
 }
 
@@ -94,34 +124,106 @@ support vector machine classification.} Computational Optimization and Applicati
 
 \examples{
 
-my.seed<- 123
 
-train<-sim.data(n = 200, ng = 100, nsg = 10, corr=FALSE, seed=my.seed )
-print(str(train)) 
-
-
-# train SCAD SVM ####################
-# define set values of tuning parameter lambda1 for SCAD 
-lambda1.scad <- c (seq(0.01 ,0.05, .01),  seq(0.1,0.5, 0.2), 1 ) 
-# for presentation don't check  all lambdas : time consuming! 
-lambda1.scad<-lambda1.scad[2:3]
-# 
-# train SCAD SVM
-fit.scad<- svm.fs(x=t(train$x),y=train$y, fs.method="scad", cross.outer= 0, lambda1.set=lambda1.scad, seed=my.seed)
-	
-	
-# train 1NORM SVM 	################	
-# define set values of tuning parameter lambda1 for 1norm
-epsi.set<-vector(); for (num in (1:9)) epsi.set<-sort(c(epsi.set, c(num*10^seq(-5, -1, 1 ))) )
-# for presentation don't check  all lambdas : time consuming! 
-lambda1.1norm <- 	epsi.set[c(3,5)] # 2 params
-
-# train 1norm SVM
-# time consuming: for presentation only for the first 100 samples    
-## DON'T RUN : fit.1norm<- svm.fs(x=t(train$x),y=train$y, fs.method="1norm", cross.outer= 0, lambda1.set=lambda1.1norm, seed=my.seed)
-fit.1norm<- svm.fs(x=t(train$x)[1:100,],y=train$y[1:100], fs.method="1norm", cross.outer= 0, lambda1.set=lambda1.1norm, seed=my.seed)
-	
-    
+\donttest{
+		
+		seed<- 123
+		
+		train<-sim.data(n = 200, ng = 100, nsg = 10, corr=FALSE, seed=seed )
+		print(str(train)) 
+		
+		
+		### Fixed grid ####
+		
+		# train SCAD SVM ####################
+		# define set values of tuning parameter lambda1 for SCAD 
+		lambda1.scad <- c (seq(0.01 ,0.05, .01),  seq(0.1,0.5, 0.2), 1 ) 
+		# for presentation don't check  all lambdas : time consuming! 
+		lambda1.scad<-lambda1.scad[2:3]
+		# 
+		# train SCAD SVM
+		
+		# computation intensive; for demostration reasons only for the first 100 features 
+		# and only for 10 Iterations maxIter=10, default maxIter=700
+			system.time(scad.fix<- svm.fs(t(train$x)[,1:100], y=train$y, fs.method="scad", 
+					  							cross.outer= 0, grid.search = "discrete",  
+					  							lambda1.set=lambda1.scad,
+					  							parms.coding = "none", show="none",
+					  							maxIter = 10, inner.val.method = "cv", cross.inner= 5,
+					  							seed=seed, verbose=FALSE) 	)
+			
+			print(scad.fix)
+			
+		# train 1NORM SVM 	################	
+		# define set values of tuning parameter lambda1 for 1norm
+		#epsi.set<-vector(); for (num in (1:9)) epsi.set<-sort(c(epsi.set, c(num*10^seq(-5, -1, 1 ))) )
+		## for presentation don't check  all lambdas : time consuming! 
+		#lambda1.1norm <- 	epsi.set[c(3,5)] # 2 params
+		#
+		### train 1norm SVM
+		## time consuming: for presentation only for the first 100 features    
+		#norm1.fix<- svm.fs(t(train$x)[,1:100], y=train$y, fs.method="1norm", 
+		#			  							cross.outer= 0, grid.search = "discrete",  
+		#			  							lambda1.set=lambda1.1norm,
+		#			  							parms.coding = "none", show="none",
+		#			  							maxIter = 700, inner.val.method = "cv", cross.inner= 5,
+		#			  							seed=seed, verbose=FALSE ) 	
+		#	
+		#	print(norm1.fix)   
+		
+		### Interval  search  ####
+		
+		
+		seed <- 123
+		
+		train<-sim.data(n = 200, ng = 100, nsg = 10, corr=FALSE, seed=seed )
+		print(str(train)) 
+		
+		
+		test<-sim.data(n = 200, ng = 100, nsg = 10, corr=FALSE, seed=seed+1 )
+		print(str(test)) 
+		
+				
+		bounds=t(data.frame(log2lambda1=c(-10, 10)))
+						colnames(bounds)<-c("lower", "upper")	
+		
+		# computation intensive; for demostration reasons only for the first 100 features 
+		# and only for 10 Iterations maxIter=10, default maxIter=700
+		print("start interval search")
+			system.time( scad<- svm.fs(t(train$x)[,1:100], y=train$y, fs.method="scad", bounds=bounds, 
+					  							cross.outer= 0, grid.search = "interval",  maxIter = 10, 
+					  							inner.val.method = "cv", cross.inner= 5, maxevals=500,
+					  							 seed=seed, parms.coding = "log2", show="none", verbose=FALSE ) )
+		print("scad final model")
+		print(str(scad$model))
+				
+		(scad.5cv.test<-predict.penSVM(scad, t(test$x)[,1:100], newdata.labels=test$y)   )
+		
+		
+		print(paste("minimal 5-fold cv error:", scad$model$fit.info$fmin, 
+		"by log2(lambda1)=", scad$model$fit.info$xmin))
+		
+		print(" all lambdas with the same minimum? ")
+		print(scad$model$fit.info$ points.fmin) 
+		
+		print(paste(scad$model$fit.info$neval, "visited points"))
+		
+		
+		print(" overview: over all visitied points in tuning parameter space 
+		with corresponding cv errors")
+		print(data.frame(Xtrain=scad$model$fit.info$Xtrain, 
+					cv.error=scad$model$fit.info$Ytrain))
+		# 						 
+		
+		# create  3 plots on one screen: 
+		# 1st plot: distribution of initial points in tuning parameter space
+		# 2nd plot: visited lambda points vs. cv errors
+		# 3rd plot: the same as the 2nd plot, Ytrain.exclude points are excluded. 
+		# The value cv.error = 10^16 stays for the cv error for an empty model ! 
+		.plot.EPSGO.parms (scad$model$fit.info$Xtrain, scad$model$fit.info$Ytrain,
+				bound=bounds, Ytrain.exclude=10^16, plot.name=NULL )
+		
+} # end of \donttest
 
 }
 

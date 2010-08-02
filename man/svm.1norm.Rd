@@ -1,5 +1,8 @@
 \name{lpsvm}
+
 \alias{lpsvm}
+
+
 
 \title{Fit L1-norm SVM }
 \description{
@@ -7,20 +10,22 @@
   ( a fast Newton algorithm NLPSVM from Fung and Mangasarian ) 
 }
 \usage{
-lpsvm(A, d, k = 5, nu = 0, output = 1, delta = 10^-3, epsi = 10^-4, my.seed = 123)
+lpsvm(A, d, k = 5, nu = 0, output = 1, delta = 10^-3, epsi = 10^-4, 
+seed = 123, maxIter=700)
 }
 
 \arguments{
-  \item{A}{ n-by-d data matrix to train (n chips/patients, d clones/genes)  }
-  \item{d}{ vector of class labels  -1 or 1's (for n chips/patiens ) }
-  \item{k}{  k-fold for cv, default k=5  }
+  \item{A}{ n-by-d data matrix to train (n chips/patients, d clones/genes).  }
+  \item{d}{ vector of class labels  -1 or 1's (for n chips/patiens ). }
+  \item{k}{  k-fold for cv, default k=5.  }
   \item{nu}{ weighted parameter, 1 - easy estimation,
                     0  - hard estimation, any other value - used as nu by the algorithm.
-                    default : 0 }
-  \item{output}{ 0 - no output, 1 - produce output, default is 0 }
-  \item{delta}{ some small value, default \eqn{10^-3} }
-  \item{epsi}{ tuning parameter  }
-  \item{my.seed}{ seed }
+                    Default : 0. }
+  \item{output}{ 0 - no output, 1 - produce output, default is 0. }
+  \item{delta}{ some small value, default: \eqn{10^-3}. }
+  \item{epsi}{ tuning parameter.  }
+  \item{seed}{ seed. }
+  \item{maxIter}{ maximal iterations, default: 700. }
 }
 
 \details{
@@ -50,8 +55,8 @@ lpsvm(A, d, k = 5, nu = 0, output = 1, delta = 10^-3, epsi = 10^-4, my.seed = 12
 }
 
 \references{ 
-Fung, G. and Mangasarian, O. L. (2004). \emph{A feature selection newton method for 
-support vector machine classification.} Computational Optimization and Applications Journal 28(2)  pp. 185-202. 
+Fung, G. and Mangasarian, O. L. (2004). A feature selection newton method for 
+support vector machine classification. \emph{Computational Optimization and Applications Journal 28(2)  pp. 185-202}. 
 }
 
 
@@ -66,8 +71,8 @@ train<-sim.data(n = 20, ng = 100, nsg = 10, corr=FALSE, seed=12)
 print(str(train)) 
 	
 # train data	
-model <- lpsvm(A=t(train$x), d=train$y, k=5, nu=0,output=0, delta=10^-3, epsi=0.001, my.seed=12)
+model <- lpsvm(A=t(train$x), d=train$y, k=5, nu=0,output=0, delta=10^-3, epsi=0.001, seed=12)
 print(model)
 
-
+print.1norm.svm(model)
 }
