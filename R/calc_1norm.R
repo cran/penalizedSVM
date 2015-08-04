@@ -34,7 +34,13 @@
 	# fit$testCorr = correctness in % [0,100],  rewrite as  1- (testCorr)/100 
 	if (exists("fit")) rm(fit)
 	try(fit <- lpsvm(A=x.svm, d=y.svm, k=cross.inner, nu=0,output=0, delta=10^-3, epsi=lambda1, seed=seed))
-	cv<-ifelse ( (exists("fit") & !is.null(fit$testCorr)), 1- (fit$testCorr)/100 , 10^16 )	
+	#cv<-ifelse ( (exists("fit") & !is.null(fit$testCorr)), 1- (fit$testCorr)/100 , 10^16 )	
+	cv <- 10^16
+	if (exists("fit")) {
+		if (!is.null(fit$testCorr)) {
+			cv <- 1- (fit$testCorr)/100
+		}
+	}
 	#if fit does not exists
 	if (!exists("fit")) fit<- NULL
 	

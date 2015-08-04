@@ -53,15 +53,15 @@ EPSGO<- function(
 	#	 	 neval = N
 	#	6.	REPEAT
 	#					6.1  Find a new p, with max E[I(p)] ( the same as min -E[I(p)] )  
-	#					˜p = argmaxp E[I(p)] (computed by DIRECT)
+	#					?p = argmaxp E[I(p)] (computed by DIRECT)
 	#					# Important! Direct.R calculate global min! --> change Problem function
 	#					6.2 compute std. dev. and mean of E[I(p)]
 	#					6.3 new p, new Q(p) 
-	#						  Qnew = Q(˜p)
+	#						  Qnew = Q(?p)
 	#					6.4 Add the new p ?
 	#							if Qnew < Qmin
 	#								Qmin = Qnew
-	#								ˆp = ˜p
+	#								?p = ?p
 	#							end
 	#					6.5 update Online GP
 	#							neval = neval + 1
@@ -229,9 +229,9 @@ EPSGO<- function(
 	fmin <- Q.min
 	xmin<- min.p
 	not_changed = 0
-	
+
 	set.seed(seed)
-	
+
 	while (!finished){ 
 		if (verbose ) print(paste("loop", loop))
 		# calculate Q for the new points 		
@@ -265,7 +265,6 @@ EPSGO<- function(
 		if (fmin < fminlower){ 
 				break
 			} 
-		
 		if (flag.find.one.min){
 			### skip it (in case of having more than 1 points with global min )
 			# break if reach the min value
@@ -311,8 +310,8 @@ EPSGO<- function(
 					finished <- TRUE
 					break  
 				}
-				try(fit.gp<-mlegp(Xtrain, Ytrain,constantMean=0, seed=gp.seed.new,  verbose= 0  ))
-				
+     	  try(fit.gp<-mlegp(Xtrain, Ytrain,constantMean=0, seed=gp.seed.new,  verbose= 0  ))
+     	  
 				flag.fit.gp<- FALSE
       	# if fit.gp exists AND is not null
       	if (exists("fit.gp"))
@@ -334,7 +333,7 @@ EPSGO<- function(
 		}
 		
 		if (show !="none" ) plot(fit.gp, main=paste("Gaussian Process", "iter ", loop))
-			
+		
 		Problem<- list(f = "ExpImprovement" )
 		
 					
