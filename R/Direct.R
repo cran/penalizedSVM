@@ -47,7 +47,6 @@ n            <-nrow(bounds)
 #% Determine option values
 theglobalmin = globalmin
 
-
 # %-- New 06/08/2004 Pre-allocate memory for storage vectors
 if (testflag == 0){
     lengths    = matrix(0,n,c(maxevals + floor(.10*maxevals)))
@@ -73,7 +72,7 @@ DIRini.list<-.DIRini(Problem,n, a=bounds[,"lower"], b=bounds[, "upper"],
         theglobalmin, maxdeep, testflag, impcons, ...)
       #  theglobalmin, maxdeep, testflag, impcons, fmin, fit.gp, muX, muY)
  
-        
+
 thirds <- DIRini.list$thirds
 #%  lengths =  length array! will store number of slices in each dimension for
 #%-- each rectangle. dimension will be rows; 
@@ -98,12 +97,14 @@ ret_point.xatmin = point.xatmin
 if(showits !="none" & !is.null(pdf.name)) { 
 	pdf(pdf.name, pdf.width, pdf.height)
 }
-par(mfrow=my.mfrow)
+if (showits != "none") {
+  par(mfrow=my.mfrow)
+}
 
 #%-- MAIN LOOP -----------------------------------------------------%
 minval = fc[1] + con[1]
 while (perror > tol){
-   #%-- Create list S of potentially optimal hyper-rectangles
+  #%-- Create list S of potentially optimal hyper-rectangles
    S <- .find_po(fc=fc+con,
        				 lengths= lengths,
        				 minval=minval, ep=ep, szes=szes)
@@ -159,7 +160,7 @@ while (perror > tol){
        ret_minval <- minval;
        ret_point.xatmin <- point.xatmin;
    } 
- 
+   
    #%--see if we are done ------------------------------------------%
    if (testflag == 1){
       #%-- Calculate error if globalmin known
@@ -197,13 +198,14 @@ while (perror > tol){
     fc <- .replaceinf(lengths=lengths,c=c,fc=fc,con=con,
                     flags=feas_flags, pert=pert)
   }
-
+   
   #%-- show iteration stats
   if (verbose)  print(paste("Iter:", itctr, "f_min:", minval, "fn evals:", fcncounter, sep="   "))
     
   itctr  = itctr + 1
 
 } # end  of while (perror > tol)
+
 
 if(showits !="none" & !is.null(pdf.name)) dev.off()
 
