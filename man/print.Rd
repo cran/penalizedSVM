@@ -8,8 +8,8 @@
  Print Function for FS SVM
 }
 \usage{
-print.scad.svm(x,...)
-print.1norm.svm(x,...)
+\method{print}{scad.svm}(x,...)
+\method{print}{1norm.svm}(x,...)
 
 }
 

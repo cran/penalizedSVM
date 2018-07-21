@@ -47,8 +47,8 @@ lpsvm<-function (A, d, k=5, nu=0,output=1, delta=10^-3, epsi=10^-4,  seed=123, m
 #       nu:             estimated value (or specified value) of nu
 #==========================================================================
 	
-	require(statmod) # for matrixmultplications 
-	require(corpcor)
+	## require(statmod) # for matrixmultplications 
+	## require(corpcor)
 	
 	# be shure that d is a vector of 1 and -1
 	tmp<-matrix(as.numeric(as.character(d)))

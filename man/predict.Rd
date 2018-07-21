@@ -59,8 +59,10 @@ lambda1.scad <- c (seq(0.01 ,0.05, .01),  seq(0.1,0.5, 0.2), 1 )
 # computation intensive; for demostration reasons only for the first 100 features
 # and only for 10 Iterations maxIter=10, default maxIter=700
 
-system.time(fit.scad<- svm.fs(x=t(train$x)[,1:100],y=train$y, fs.method="scad", cross.outer= 0,
-	grid.search = "discrete",  lambda1.set=lambda1.scad[1:3], show="none",
+system.time(fit.scad<- svm.fs(x=t(train$x)[,1:100],y=train$y,
+        fs.method="scad", cross.outer= 0,
+	grid.search = "discrete",
+        lambda1.set=lambda1.scad[1:3], show="none",
 	parms.coding = "none", maxIter=10,
 	inner.val.method = "cv", cross.inner= 5, seed=seed, verbose=FALSE))
 

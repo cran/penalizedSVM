@@ -28,9 +28,9 @@ scad_L2.svc <- function(lambda1 = 0.01, lambda2=0.01, x, y, a = 3.7, tol = 10^(-
 	ytrain <- as.numeric(as.character(y))
 	
 	# start with linear svm:
-	require(e1071, quietly=TRUE)
-	require(corpcor) # for pseudoinverse
-	require(statmod) # for matrixmultplications 
+	## require(e1071, quietly=TRUE)
+	## require(corpcor) # for pseudoinverse
+	## require(statmod) # for matrixmultplications 
 	
 	# change class labels to -1 and 1
 	ytrain <- 2*as.numeric(as.factor(y))-3 

@@ -771,7 +771,7 @@ if (length(infeas_points)>0){
 	        															fstar + pert*abs(fstar),
 	        															fstar + pert*1 )
 	    }else {
-	        fcn_values(index) = maxfc+1
+	        fcn_values[index] = maxfc+1
 	        maxfc             = maxfc+1
 	    }
 	} # end of for

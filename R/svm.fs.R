@@ -57,9 +57,9 @@ svm.fs <- function (x, ...)
 	print(show)
 	
 	
-	require(lhs)#  - Latin Hypercube sampling function
-	require(tgp)# for GP 
-	require(mlegp)
+	## require(lhs)#  - Latin Hypercube sampling function
+	## require(tgp)# for GP 
+	## require(mlegp)
 
 
 	

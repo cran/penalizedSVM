@@ -12,10 +12,11 @@
 }
 
 \usage{
-EPSGO(Q.func, bounds,	parms.coding="none", fminlower=0, flag.find.one.min =FALSE,
-			show=c("none", "final", "all"), N= NULL, maxevals = 500,  
-	    pdf.name=NULL,  pdf.width=12,  pdf.height=12,   my.mfrow=c(1,1), 
-	    verbose=TRUE, seed=123,  ...  )
+EPSGO(Q.func, bounds, parms.coding = "none", fminlower = 0,
+      flag.find.one.min = FALSE, show = c("none", "final", "all"),
+      N = NULL, maxevals = 500,
+      pdf.name = NULL, pdf.width = 12, pdf.height = 12,
+      my.mfrow = c(1,1), verbose = TRUE, seed = 123,  ...  )
 }
 
 \arguments{
