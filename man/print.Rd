@@ -1,20 +1,17 @@
 \name{print}
-\alias{print.scad.svm}
-\alias{print.1norm.svm}
 
+\alias{print.penSVM}
 
 \title{ Print Function for FS SVM}
 \description{
  Print Function for FS SVM
 }
 \usage{
-\method{print}{scad.svm}(x,...)
-\method{print}{1norm.svm}(x,...)
-
+\method{print}{penSVM}(x,\dots)
 }
 
 \arguments{
-  \item{x}{ model trained by scad or 1norm svm }
+  \item{x}{ model trained by scad or 1norm svm of class PenSVM }
   \item{\dots}{ additional argument(s) }
 }
 
@@ -22,7 +19,7 @@
 
 \author{ Natalia Becker }
 
-\seealso{ \link[e1071]{svm}, \code{\link{svm.fs}} } 
+\seealso{ \link[e1071]{svm}, \code{\link{svmfs}} } 
 
 \examples{
 
@@ -34,5 +31,5 @@ print(str(train))
 model <- scadsvc(as.matrix(t(train$x)), y=train$y, lambda=0.05)
 print(str(model))
 
-print.scad.svm(model)
+print(model)
 }

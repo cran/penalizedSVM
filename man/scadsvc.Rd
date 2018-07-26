@@ -68,6 +68,6 @@ print(str(train))
 model <- scadsvc(as.matrix(t(train$x)), y=train$y, lambda=0.01)
 print(str(model))
 
-print.scad.svm(model)
+print(model)
 
 }

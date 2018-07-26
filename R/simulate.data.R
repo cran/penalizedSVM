@@ -26,7 +26,7 @@ sim.data <- function(n = 256, ng = 1000, nsg = 100, p.n.ratio = 0.5,
 
 ####################################################################################
 
-	## require(MASS)
+	#require(MASS)
 	set.seed(seed)
 	# assumption I: intercept = 0, beta0=0
 	b0<- 0

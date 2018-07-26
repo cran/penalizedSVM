@@ -1,24 +1,25 @@
-# Import all packages listed as Imports or Depends
-import(
-  e1071,
-  MASS,
-  corpcor,
-  statmod,
-  tgp,
-  mlegp,
-  lhs
-)
-
-importFrom("grDevices", "dev.off", "pdf")
-importFrom("graphics", "abline", "legend", "par", "plot", "text")
-importFrom("stats", "dnorm", "optimize", "plogis", "pnorm", "predict",
-           "runif", "sd")
-importFrom("utils", "str")
+# Default NAMESPACE created by R
+# Remove the previous line if you edit this file
 
 # Export all names
 exportPattern(".")
 
+
+# Import all packages listed as Imports or Depends
+import(e1071, mlegp, MASS )
+
+importFrom(tgp,lhs)
+importFrom(corpcor, pseudoinverse)
+importFrom(corpcor, rank.condition)
+importFrom(statmod, matvec) 
+importFrom(statmod, vecmat) 
+importFrom("grDevices", "dev.off", "pdf")
+importFrom("graphics", "abline", "legend", "par", "plot", "text")
+importFrom("stats", "dnorm", "optimize", "plogis", "pnorm", "predict",
+             "runif", "sd")
+importFrom("utils", "str")
+
 S3method(predict, penSVM)
-S3method(print, "1norm.svm")
-S3method(print, scad.svm)
-S3method(svm.fs, default)
+S3method(print, penSVM)
+
+S3method(svmfs, default)

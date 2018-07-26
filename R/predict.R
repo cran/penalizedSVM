@@ -3,9 +3,11 @@ predict.penSVM<-function(object, newdata, newdata.labels=NULL,labels.universe=NU
 	# input:
 	# newdata: matrx of ratios, rows - samples, columns - clones
 	# newdata.labels - vector of classes for samples
-	# object - fit of trained data (producedby svm.fs) 
+	# object - fit of trained data (produced by svmfs) 
 	# labels.universe: important for models produced by loocv: all possible labels in the particular data set
 	 	
+  #require(e1071, quietly=TRUE)
+  
 	pred.class<- NULL
 	tab.classes<- NULL
 	error.classes<- NA

@@ -30,7 +30,7 @@ Wahba G., Lin, Y. and Zhang, H. (2000). \emph{GACV for support vector machines, 
 to look at margin-like quantities, in A. J. Smola, P. Bartlett, B. Schoelkopf and D. Schurmans
 (eds)}, Advances in Large Margin Classifiers, MIT Press, pp. 297-309.
 }
-\author{ Natalia Becker \email{natalia.becker@dkfz.de} }
+\author{ Natalia Becker \email{natalie_becker at gmx.de} }
 
 
 \seealso{  \code{\link{scadsvc}},  \code{\link{predict.penSVM}}, \code{\link{sim.data}}     }

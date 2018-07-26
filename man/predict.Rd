@@ -14,7 +14,7 @@
 }
 
 \arguments{
-  \item{object}{ Object of class "penSVM", created by 'svm.fs'}
+  \item{object}{ Object of class "penSVM", created by 'svmfs'}
   \item{newdata}{ A matrix containing the new input data, samples in rows, features in columns }
   \item{newdata.labels}{ optional, new data class labels  }
   \item{labels.universe}{ important for models produced by loocv: all possible labels in the particular data set  }
@@ -34,7 +34,7 @@
 \author{ Natalia Becker }
 
 
-\seealso{ \link[e1071]{svm}, \code{\link{svm.fs}} } 
+\seealso{ \link[e1071]{svm}, \code{\link{svmfs}} } 
 
 \examples{
 
@@ -53,16 +53,14 @@ my.pred <-ifelse( predict(my.svm, t(test$x)) >0,1,-1)
 # Check accuracy:
 table(my.pred, test$y)
 
-# define set values of tuning parameter lambda1 for SCAD 
+\dontrun{# define set values of tuning parameter lambda1 for SCAD 
 lambda1.scad <- c (seq(0.01 ,0.05, .01),  seq(0.1,0.5, 0.2), 1 ) 
 # for presentation don't check  all lambdas : time consuming! 
 # computation intensive; for demostration reasons only for the first 100 features
 # and only for 10 Iterations maxIter=10, default maxIter=700
 
-system.time(fit.scad<- svm.fs(x=t(train$x)[,1:100],y=train$y,
-        fs.method="scad", cross.outer= 0,
-	grid.search = "discrete",
-        lambda1.set=lambda1.scad[1:3], show="none",
+system.time(fit.scad<- svmfs(x=t(train$x)[,1:100],y=train$y, fs.method="scad", cross.outer= 0,
+	grid.search = "discrete",  lambda1.set=lambda1.scad[1:3], show="none",
 	parms.coding = "none", maxIter=10,
 	inner.val.method = "cv", cross.inner= 5, seed=seed, verbose=FALSE))
 
@@ -71,6 +69,7 @@ system.time(fit.scad<- svm.fs(x=t(train$x)[,1:100],y=train$y,
 test.error.scad<-predict(fit.scad, newdata=t(test$x)[,1:100],newdata.labels=test$y )
  # Check accuracy SCAD SVM  	
 print(test.error.scad$tab)	
+}
 
 #########################################
 ## analog for 1-norm SVM
@@ -78,12 +77,12 @@ print(test.error.scad$tab)
 #lambda1.1norm <- 	epsi.set[c(3,5)] # 2 params
 #
 ## train 1norm SVM
-# norm1.fix<- svm.fs(t(train$x), y=train$y, fs.method="1norm", 
-#			  							cross.outer= 0, grid.search = "discrete",  
-#			  							lambda1.set=lambda1.1norm, show="none",
-#			  							parms.coding = "none",
-#			  							maxIter = 700, inner.val.method = "cv", cross.inner= 5,
-#			  							seed=seed, verbose=FALSE ) 	
+# norm1.fix<- svmfs(t(train$x), y=train$y, fs.method="1norm", 
+#		cross.outer= 0, grid.search = "discrete",  
+#		lambda1.set=lambda1.1norm, show="none",
+#		parms.coding = "none",
+#		maxIter = 700, inner.val.method = "cv", cross.inner= 5,
+#		seed=seed, verbose=FALSE ) 	
 #	
 #	print(norm1.fix)   
 #

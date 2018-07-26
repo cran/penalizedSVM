@@ -7,7 +7,7 @@ ExpImprovement<- function(x_new, fmin, fit.gp, muX=NULL, muY=NULL){
 
 ###  x_new - a new point in parameter space
 
-	 ## require(mlegp)
+	 #require(mlegp)
     # don't allow negative parameters coused by substration 'x_new - muX'!   skip normalisation in R implementation! 
 	#x_new= (x_new - muX);
 

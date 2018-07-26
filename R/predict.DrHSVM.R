@@ -10,7 +10,7 @@
 
 	# interpolate  coeffs for a new point and returns the new coefs
 	if (!is.null(newlam)){ 
-		if (newlam < 0 ) stop("Error in .DrHSVM.predict: new.lam1 should be non negative. ")
+		if (newlam < 0 ) stop("Error in DrHSVM.predict: new.lam1 should be non-negative. ")
 		lambdas = object$ lambda1
 		
 		# check extreme cases:

@@ -1,7 +1,7 @@
-\name{svm.fs}
+\name{svmfs}
 
-\alias{svm.fs}
-\alias{svm.fs.default}
+\alias{svmfs}
+\alias{svmfs.default}
 \alias{DrHSVM}
 \alias{scad_L2.svc}
 
@@ -9,59 +9,41 @@
 \title{  Fits  SVM mit variable selection using penalties.}
 \description{
   Fits  SVM with variable selection (clone selection) using penalties SCAD,  L1 norm, Elastic Net (L1 + L2 norms) and ELastic SCAD (SCAD + L1 norm). 
-  Additionally tuning parameter search is presented by two approcaches: fixed grid or interval search. 
+  Additionally tuning parameter search is presented by two approcaches: fixed grid or interval search.
+  NOTE: The name of the function has been changed: svmfs instead of svm.fs! 
+
 }
 \usage{
-\method{svm.fs}{default}(
-				x,
-				y, 
+\method{svmfs}{default}(x,y,
 				fs.method = c("scad", "1norm", "scad+L2", "DrHSVM"),
-				### tuning parameter settings
-				# chose the search method for tuning lambda1,2: 'interval' or 'discrete'
 				grid.search=c("interval","discrete"),
-				#fixed grid for lambda1, lambda2
 				lambda1.set=NULL,  
 				lambda2.set=NULL,
-				# define range for lambda1,2 for interval search
 				bounds=NULL, 
-				# parms.coding="none" or "log2"
 				parms.coding= c("log2","none"),
-				# internal parameter for DIRECT
 				maxevals=500, 
-				### valuidation settings
-				# fot nested validation, 'cross.outer'-fold cv
-				#cross.outer= 0,
-				# method for the inner validation: cross validation, gacv   
 				inner.val.method = c("cv", "gacv"),
-				# 'cross.inner'-fold cv
 				cross.inner= 5,
-				# show plots in Direct?
 				show= c("none", "final"),
-				### other  settings
-				# internal parameter for svm
 				calc.class.weights=FALSE,
 				class.weights=NULL, 
-				#seed
 				seed=123, 
-				# max iterations for the feature selection svm method
 				maxIter=700, 
-				# verbose?
 				verbose=TRUE,
-				...)
+				\dots) 
 }
-
-
 \arguments{
   \item{x}{ input matrix with genes in columns and samples in rows!  }
   \item{y}{ numerical vector of class labels, -1 , 1 }
-  \item{fs.method}{ feature selection method. Availible 'scad',  '1norm' for 1-norm,  "DrHSVM" for Elastic Net and "scad+L2" for Elastic SCAD }
+  \item{fs.method}{ feature selection method. Availible 'scad',  '1norm' for 1-norm,  "DrHSVM" for Elastic Net 
+  and "scad+L2" for Elastic SCAD }
   \item{grid.search}{ chose the search method for tuning lambda1,2: 'interval' or 'discrete', default: 'interval'}
   \item{lambda1.set}{ for fixed grid search: fixed grid for lambda1, default: NULL  }
   \item{lambda2.set}{ for fixed grid search: fixed grid for lambda2, default: NULL  }
   \item{bounds}{ for interval grid search: fixed grid for lambda2, default: NULL  }
   \item{parms.coding}{ for interval grid search: parms.coding: none or log2  , default: log2  }
   \item{maxevals}{ the maximum number of DIRECT function evaluations, default: 500.   }
-  \item{cross.outer}{ fold of outer cross validation, default is 0, no cv.     }
+  %\item{cross.outer}{ fold of outer cross validation, default is 0, no cv.     }
   \item{calc.class.weights}{ calculate class.weights for SVM, default: FALSE }
   \item{class.weights}{ a named vector of weights for the different
     classes, used for asymetric class sizes. Not all factor levels have
@@ -76,6 +58,7 @@
 }
 
 \details{
+  
   The goodness of the model is highly correlated with the choice of tuning parameter lambda.
   Therefore the model is trained with different lambdas and the best model with optimal tuning parameter 
   is used in futher analysises.
@@ -96,7 +79,7 @@
   \item{classes }{ vector of class labels as input 'y' }
   \item{sample.names }{sample names}
   \item{class.method }{feature selection method}
-  \item{cross.outer }{ outer cv  }
+  %\item{cross.outer }{ outer cv  }
   \item{seed }{ seed}
   \item{model }{ final model 
   	\itemize{
@@ -106,7 +89,7 @@
 		  \item index - the index of the resulting support vectors in the data matrix. 
 		  \item type - type of svm, from svm function 
 		  \item lam.opt  - optimal lambda  
-		  \item  gacv - corresponding gacv 
+		  \item gacv - corresponding gacv 
 	  }
 	}
 } 
@@ -117,7 +100,7 @@ Bioinformatics, 25(13),p 1711-1712
 
 }
 
-\author{ Natalia Becker natalia.becker at dkfz.de }
+\author{ Natalia Becker natalie_becker at gmx.de }
 
 
 \seealso{ \code{\link{predict.penSVM}},   \code{\link[e1071]{svm}} (in package \pkg{e1071}) }
@@ -145,29 +128,30 @@ Bioinformatics, 25(13),p 1711-1712
 		
 		# computation intensive; for demostration reasons only for the first 100 features 
 		# and only for 10 Iterations maxIter=10, default maxIter=700
-			system.time(scad.fix<- svm.fs(t(train$x)[,1:100], y=train$y, fs.method="scad", 
-					  							cross.outer= 0, grid.search = "discrete",  
-					  							lambda1.set=lambda1.scad,
-					  							parms.coding = "none", show="none",
-					  							maxIter = 10, inner.val.method = "cv", cross.inner= 5,
-					  							seed=seed, verbose=FALSE) 	)
+		system.time(scad.fix<- svmfs(t(train$x)[,1:100], y=train$y, fs.method="scad", 
+  		cross.outer= 0, grid.search = "discrete",  
+  		lambda1.set=lambda1.scad,
+  		parms.coding = "none", show="none",
+  		maxIter = 10, inner.val.method = "cv", cross.inner= 5,
+  		seed=seed, verbose=FALSE) 	)
 			
-			print(scad.fix)
+		print(scad.fix)
 			
 		# train 1NORM SVM 	################	
 		# define set values of tuning parameter lambda1 for 1norm
-		#epsi.set<-vector(); for (num in (1:9)) epsi.set<-sort(c(epsi.set, c(num*10^seq(-5, -1, 1 ))) )
+		#epsi.set<-vector(); for (num in (1:9)) epsi.set<-sort(c(epsi.set,
+		#    c(num*10^seq(-5, -1, 1 ))) )
 		## for presentation don't check  all lambdas : time consuming! 
 		#lambda1.1norm <- 	epsi.set[c(3,5)] # 2 params
 		#
 		### train 1norm SVM
 		## time consuming: for presentation only for the first 100 features    
-		#norm1.fix<- svm.fs(t(train$x)[,1:100], y=train$y, fs.method="1norm", 
-		#			  							cross.outer= 0, grid.search = "discrete",  
-		#			  							lambda1.set=lambda1.1norm,
-		#			  							parms.coding = "none", show="none",
-		#			  							maxIter = 700, inner.val.method = "cv", cross.inner= 5,
-		#			  							seed=seed, verbose=FALSE ) 	
+		#norm1.fix<- svmfs(t(train$x)[,1:100], y=train$y, fs.method="1norm", 
+		#			cross.outer= 0, grid.search = "discrete",  
+		#			lambda1.set=lambda1.1norm,
+		#			parms.coding = "none", show="none",
+		#			maxIter = 700, inner.val.method = "cv", cross.inner= 5,
+		#			seed=seed, verbose=FALSE ) 	
 		#	
 		#	print(norm1.fix)   
 		
@@ -190,10 +174,11 @@ Bioinformatics, 25(13),p 1711-1712
 		# computation intensive; for demostration reasons only for the first 100 features 
 		# and only for 10 Iterations maxIter=10, default maxIter=700
 		print("start interval search")
-			system.time( scad<- svm.fs(t(train$x)[,1:100], y=train$y, fs.method="scad", bounds=bounds, 
-					  							cross.outer= 0, grid.search = "interval",  maxIter = 10, 
-					  							inner.val.method = "cv", cross.inner= 5, maxevals=500,
-					  							 seed=seed, parms.coding = "log2", show="none", verbose=FALSE ) )
+			system.time( scad<- svmfs(t(train$x)[,1:100], y=train$y,
+			 fs.method="scad", bounds=bounds, 
+			 cross.outer= 0, grid.search = "interval",  maxIter = 10, 
+			 inner.val.method = "cv", cross.inner= 5, maxevals=500,
+			 seed=seed, parms.coding = "log2", show="none", verbose=FALSE ) )
 		print("scad final model")
 		print(str(scad$model))
 				

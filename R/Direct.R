@@ -721,9 +721,13 @@ return(list(lengths=lengths,fc=fc,c=c,con=con, feas_flags=feas_flags,
 #% Purpose    :  Assign R. Carter value to given point              %
 #%------------------------------------------------------------------%
 # 
-
-#%-- Initialize fcn_values to original values
-fcn_values <- fc
+#There's a couple of fixes depending on whether or not there's a way
+# to bind the variable in the package you're using. 
+# The universal fix is to put VariableNamed <- NULL at the top of your script
+#   before the variable is called. 
+  
+#%-- Initialize fcnvalues to original values
+fcnvalues <- fc
 
 #%-- Find the infeasible points
 infeas_points <- which(flags == 1)
@@ -767,16 +771,16 @@ if (length(infeas_points)>0){
 	    if (length(found_pointsf)>0) {
 	        #%-- assign to index the min. value found + a little bit more
 	        fstar <- min(found_pointsf);
-	        fcn_values[index] <- ifelse ((fstar != 0), 
+	        fcnvalues[index] = ifelse ((fstar != 0), 
 	        															fstar + pert*abs(fstar),
 	        															fstar + pert*1 )
 	    }else {
-	        fcn_values[index] = maxfc+1
-	        maxfc             = maxfc+1
+	      fcnvalues[index] = maxfc+1
+	      maxfc            = maxfc+1
 	    }
 	} # end of for
 } # end of if  (length(infeas_points)>0)
-return (fcn_values)
+return (fcnvalues)
 } 
 
 ####################################################################################################

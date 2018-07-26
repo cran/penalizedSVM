@@ -1,9 +1,9 @@
-svm.fs <- function (x, ...)
-  UseMethod ("svm.fs")
+svmfs <- function (x, ...)
+  UseMethod ("svmfs")
 
 
 
-`svm.fs.default` <-
+`svmfs.default` <-
 				function(x,y, 
 				fs.method = c("scad", "1norm", "scad+L2", "DrHSVM"),
 				# chose the search method for lambda1,2: 'interval' or 'discrete'
@@ -16,7 +16,6 @@ svm.fs <- function (x, ...)
 				bounds=NULL, 
 				# parms.coding="none" or "log2"
 				parms.coding= c("log2","none"),
-				 
 				# internal parameter for DIRECT
 				maxevals=500, 
 				### valuidation settings
@@ -57,9 +56,9 @@ svm.fs <- function (x, ...)
 	print(show)
 	
 	
-	## require(lhs)#  - Latin Hypercube sampling function
-	## require(tgp)# for GP 
-	## require(mlegp)
+	#require(lhs)#  - Latin Hypercube sampling function
+	#require(tgp)# for GP 
+	#require(mlegp)
 
 
 	
@@ -217,8 +216,5 @@ rv <- list(classes=as.factor(y),
 	#class(rv) <- "MCRestimate"
 	class(rv) <- "penSVM"
 	return(rv)
-	# plot.MCRestimate
-	# plot.MCRestimate ( rv, rownames.from.object=TRUE )
-	
 }
 

@@ -25,9 +25,9 @@ scadsvc <- function(lambda1 = 0.01, x, y, a = 3.7, tol= 10^(-4), class.weights= 
 	ytrain <- 2*as.numeric(as.factor(y))-3 
 
 	# start with linear svm:
-	## require(e1071, quietly=TRUE)
-	## require(corpcor) # for pseudoinverse
-	## require(statmod) # for matrixmultplications 
+	#require(e1071, quietly=TRUE)
+	#require(corpcor) # for pseudoinverse
+	#require(statmod) # for matrix multplications vecmat and matvec 
 	
 	set.seed(seed)
 	linsvc <- svm(xtrain, factor(ytrain), kernel="linear", class.weights=class.weights, fitted =FALSE)
@@ -132,7 +132,7 @@ scadsvc <- function(lambda1 = 0.01, x, y, a = 3.7, tol= 10^(-4), class.weights= 
 			#   fitted : Fit of regularized SVM (for all patients with reduced set of genes )
 			ret <- list(w=w, b=b, xind=xind, index=index, xqx=xqx, fitted=f, type=type, lambda1 = lambda1, iter=i-1)
 	
-			class(ret) <- "scadsvm"
+			class(ret) <- c("scadsvm", "penSVM")
 			return(ret)
 		
 	} else {

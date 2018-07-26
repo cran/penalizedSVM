@@ -47,8 +47,8 @@ lpsvm<-function (A, d, k=5, nu=0,output=1, delta=10^-3, epsi=10^-4,  seed=123, m
 #       nu:             estimated value (or specified value) of nu
 #==========================================================================
 	
-	## require(statmod) # for matrixmultplications 
-	## require(corpcor)
+	#require(statmod) # for matrix multplications 
+	#require(corpcor)
 	
 	# be shure that d is a vector of 1 and -1
 	tmp<-matrix(as.numeric(as.character(d)))
@@ -168,7 +168,7 @@ lpsvm<-function (A, d, k=5, nu=0,output=1, delta=10^-3, epsi=10^-4,  seed=123, m
 	}
 		
 	ret<- list(w=w, b=(-1)*gamma, xind=xind, lambda1=epsi, iter =iter, trainCorr=trainCorr,testCorr=testCorr, nu=nu, maxIter=maxIter )
-	class(ret) <- "1norm"
+	class(ret) <- c("1norm","penSVM")
 	return(ret)
 }
 
@@ -267,7 +267,9 @@ function(A,d,nu,delta, epsi, tol=10^(-3), alpha=10^3, maxiter=50){
 	
 	if (!flag.failed) {	List<-list(w=w,gamma=gamma,xind=xind,epsi=epsi[1],delta=delta, tol=tol, iter=iter)
 	} else 	List<- NULL
-
+  
+ 
+  
 	return(List)
 }
 
@@ -294,7 +296,7 @@ function( C,d) {
 	if ( m<201){
 	H2=H;	d2=as.matrix(as.numeric(as.character(d)));
 	}else{
-		# rand(n,m) erzeugt eine  nxm - Matrix mit gleichförmig verteilten Zufallszahlen zwischen 0 und 1
+		# rand(n,m) produces a  nxm - matrice with uniform distributed random numbers in the range [0,1].
 		#r=rand(m,1);
 		r<- matrix(runif(m),m, 1)
 		# [s1,s2]=sort(r); ### s1, sorted vector, s2 - order(r); 

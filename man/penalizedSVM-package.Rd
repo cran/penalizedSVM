@@ -20,11 +20,11 @@ License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 }
 
-The main function is \code{\link{svm.fs}, see the documentation file with examples}
+The main function is \code{\link{svmfs}, see the documentation file with examples}
 }
 \author{ Natalia Becker, Axel Benner, Wiebke Werft 
 
-Maintainer: Natalia Becker (natalia.becker@dkfz.de)
+Maintainer: Natalia Becker (natalie_becker at gmx.de)
 }
 
 \references{

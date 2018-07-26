@@ -28,9 +28,9 @@ scad_L2.svc <- function(lambda1 = 0.01, lambda2=0.01, x, y, a = 3.7, tol = 10^(-
 	ytrain <- as.numeric(as.character(y))
 	
 	# start with linear svm:
-	## require(e1071, quietly=TRUE)
-	## require(corpcor) # for pseudoinverse
-	## require(statmod) # for matrixmultplications 
+	#require(e1071, quietly=TRUE)
+	#require(corpcor) # for pseudoinverse
+	#require(statmod) # for matrixmultplications 
 	
 	# change class labels to -1 and 1
 	ytrain <- 2*as.numeric(as.factor(y))-3 
@@ -168,7 +168,7 @@ scad_L2.svc <- function(lambda1 = 0.01, lambda2=0.01, x, y, a = 3.7, tol = 10^(-
 		#   fitted : Fit of regularized SVM (for all patients with reduced set of genes )
 		ret <- list(w=w, b=b, xind=xind, index=index, xqx=xqx, fitted=f, type=type, lambda1 = lambda1, lambda2=lambda2, iter=i-1, maxIter=maxIter)
 		
-		class(ret) <- "scadsvm"
+		class(ret) <- c("scadsvm", "penSVM")
 			return(ret)
 	} else {
 	return("No variable selected.")

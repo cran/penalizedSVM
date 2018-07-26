@@ -11,7 +11,7 @@ function(U, D_vec, A_vec, mat2=NULL, n.thr=500){
 	
 # NOTE : in coments '*' means matrix multiplication! 	
 	
-	## require(MASS)
+	#require(MASS)
 	
 	
 	# if mat2 doesn't exist--> use the identity matrix with dim [nrow(U),nrow(U)]
