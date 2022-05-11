@@ -103,7 +103,7 @@ EPSGO<- function(
 	
 	# start points X (= p_1,..., p_N)
 	
-	X<- lhs(N, bounds)
+	X<- tgp::lhs(N, bounds)
 	
 	if (verbose) print(X)
 	
@@ -383,7 +383,7 @@ EPSGO<- function(
 		# 6.2 compute std. dev. and mean of E[I(p)]
 		### other random sample in the same size; Latin hypercube sampling over the 
 		## whole parameter space. The idea is to make sure, that the expected improvement over the whole space is almost equally small. 
-		Xsam <- lhs(N, bounds)
+		Xsam <- tgp::lhs(N, bounds)
 		EIall=rep(0,N)	
 		for (i in 1:N ){		
 			EIall[i] = - ExpImprovement(Xsam[i, , drop=FALSE], fmin, fit.gp, muX=NULL, muY=NULL)

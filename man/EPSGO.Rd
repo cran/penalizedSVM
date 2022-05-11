@@ -78,9 +78,9 @@ EPSGO(Q.func, bounds,	parms.coding="none", fminlower=0, flag.find.one.min =FALSE
 	The code source was adopted from MATLAB originals, special thanks to Holger Froehlich.
 }
 
-	
-
-\author{ Natalia Becker natalie_becker at gmx.de }
+\author{Natalia Becker\cr
+\email{natalie_becker@gmx.de}
+}
 
 \references{
 Froehlich, H. and Zell, A. (2005) "Effcient parameter selection for support vector

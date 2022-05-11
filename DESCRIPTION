@@ -1,12 +1,12 @@
 Package: penalizedSVM
 Type: Package
 Title: Feature Selection SVM using Penalty Functions
-Version: 1.1.2
-Date: 2018-07-13
+Version: 1.1.3
+Date: 2022-05-02
 Depends: e1071, mlegp, MASS
-Imports: corpcor, statmod, tgp, lhs
+Imports: corpcor, statmod, tgp
 Author: Natalia Becker, Wiebke Werft, Axel Benner
-Maintainer: Natalia Becker <natalie_becker@gmx.de>
+Maintainer: Frederic Bertrand <frederic.bertrand@utt.fr>
 Description: Support Vector Machine (SVM) classification with simultaneous feature selection using penalty
         functions is implemented. The smoothly clipped absolute deviation (SCAD),
         'L1-norm', 'Elastic Net' ('L1-norm' and 'L2-norm') and 'Elastic
@@ -15,8 +15,8 @@ Description: Support Vector Machine (SVM) classification with simultaneous featu
         search.
 License: GPL (>= 2)
 LazyLoad: yes
-Packaged: 2018-07-26 07:30:47 UTC; BeckeN3
+Packaged: 2022-05-02 22:56:12 UTC; fbertran
 Repository: CRAN
-Date/Publication: 2018-07-26 09:42:04
+Date/Publication: 2022-05-11 07:30:02 UTC
 RoxygenNote: 6.0.1
 NeedsCompilation: no

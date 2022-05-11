@@ -100,8 +100,9 @@ Bioinformatics, 25(13),p 1711-1712
 
 }
 
-\author{ Natalia Becker natalie_becker at gmx.de }
-
+\author{Natalia Becker\cr
+\email{natalie_becker@gmx.de}
+}
 
 \seealso{ \code{\link{predict.penSVM}},   \code{\link[e1071]{svm}} (in package \pkg{e1071}) }
 

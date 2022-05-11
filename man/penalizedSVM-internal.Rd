@@ -7,7 +7,7 @@
 \alias{.EstNuShort}
 \alias{.extend.to.quad.matrix}
 \alias{.find.inverse}
-\alias{.Random.seed}
+%\alias{.Random.seed}
 \alias{.required}
 \alias{.run.cv}
 \alias{.whatiscorrect}

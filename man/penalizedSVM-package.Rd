@@ -14,8 +14,8 @@ availible up to now. Other functions will be implemented in the near feature.
 \tabular{ll}{
 Package: \tab penaltySVM\cr
 Type: \tab Package\cr
-Version: \tab 1.1\cr
-Date: \tab 2010-08-02\cr
+Version: \tab 1.1.3\cr
+Date: \tab 2022-05-02\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 }
@@ -24,8 +24,9 @@ The main function is \code{\link{svmfs}, see the documentation file with example
 }
 \author{ Natalia Becker, Axel Benner, Wiebke Werft 
 
-Maintainer: Natalia Becker (natalie_becker at gmx.de)
+Maintainer: \enc{Frederic}{Fr\'ed\'eric} Bertrand (\email{frederic.bertrand@utt.fr})
 }
+
 
 \references{
 Zhang, H. H., Ahn, J., Lin, X. and Park, C. (2006). \emph{Gene selection using
