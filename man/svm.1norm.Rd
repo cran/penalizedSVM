@@ -6,7 +6,7 @@
 
 \title{Fit L1-norm SVM }
 \description{
-  SVM mit variable selection (clone selection) using L1-norm penalty. 
+  SVM with variable selection (clone selection) using L1-norm penalty. 
   ( a fast Newton algorithm NLPSVM from Fung and Mangasarian ) 
 }
 \usage{

@@ -5,8 +5,7 @@
 \alias{ExpImprovement}
 
 
-
-\title{  Fits  SVM mit variable selection using penalties. }
+\title{  Fits  SVM with variable selection using penalties. }
 \description{
   Fits  SVM with feature selection  using penalties SCAD and 1 norm.
 }
@@ -35,10 +34,6 @@ EPSGO(Q.func, bounds,	parms.coding="none", fminlower=0, flag.find.one.min =FALSE
   \item{seed}{ seed }
   \item{\dots}{ additional argument(s) }
 }
-
-
-
-
 
 \value{
   \item{fmin }{minimal value of Q.func on the interval defined by bounds. }
@@ -136,8 +131,6 @@ machines in classification and regression via model-based global optimization"
 	.plot.EPSGO.parms (fit$Xtrain, fit$Ytrain,bound=bounds, 
 				Ytrain.exclude=10^16, plot.name=NULL )
 	} # end of \donttest
-
-
 }
 
 \keyword{ models }

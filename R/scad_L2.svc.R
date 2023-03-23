@@ -15,7 +15,7 @@ scad_L2.svc <- function(lambda1 = 0.01, lambda2=0.01, x, y, a = 3.7, tol = 10^(-
 # By Natalia Becker (08.08.2008) :-) or better: (20.08.2008) 
 # 
 
-# SVM mit variable selectoion (clone selection) using scad penalty.
+# SVM with variable selectoion (clone selection) using scad penalty.
 # NB ! xtrain = t(EP-matrix) !!!! 
 #res<-scadsvc (x=xtrain, y=ytrain, a = 3.7, tol = 10^(-3))
 # print(res)

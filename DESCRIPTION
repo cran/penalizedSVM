@@ -1,8 +1,8 @@
 Package: penalizedSVM
 Type: Package
 Title: Feature Selection SVM using Penalty Functions
-Version: 1.1.3
-Date: 2022-05-02
+Version: 1.1.4
+Date: 2023-03-23
 Depends: e1071, mlegp, MASS
 Imports: corpcor, statmod, tgp
 Author: Natalia Becker, Wiebke Werft, Axel Benner
@@ -15,8 +15,8 @@ Description: Support Vector Machine (SVM) classification with simultaneous featu
         search.
 License: GPL (>= 2)
 LazyLoad: yes
-Packaged: 2022-05-02 22:56:12 UTC; fbertran
-Repository: CRAN
-Date/Publication: 2022-05-11 07:30:02 UTC
 RoxygenNote: 6.0.1
 NeedsCompilation: no
+Packaged: 2023-03-23 14:30:06 UTC; fbertran
+Repository: CRAN
+Date/Publication: 2023-03-23 15:10:02 UTC

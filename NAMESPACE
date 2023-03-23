@@ -1,9 +1,25 @@
 # Default NAMESPACE created by R
 # Remove the previous line if you edit this file
 
-# Export all names
-exportPattern(".")
+# Export all names not beginning with .
+exportPattern("^[^\\.]")
 
+#export(Direct)         
+#export(DrHSVM)       
+#export(EPSGO)
+#export(ExpImprovement)
+#export(findgacv.scad)
+#export(lpsvm)
+#export(predict.penSVM)
+#export(print.penSVM)
+#export(scad_L2.svc) 
+#export(scadsvc)
+#export(sim.data)
+#export(sortmat)       
+#export(svmfs)
+#export(svmfs.default) 
+
+export(.plot.EPSGO.parms)
 
 # Import all packages listed as Imports or Depends
 import(e1071, mlegp, MASS )

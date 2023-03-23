@@ -24,8 +24,8 @@ sim.data(n = 256, ng = 1000, nsg = 100,
   \item{nsg}{ number of significant genes}
   \item{p.n.ratio}{ ratio between positive and negative significant genes (default 0.5)} 
 
-  \item{sg.pos.factor}{ impact factor of \_positive\_ significant genes on the classifaction, default:  1  } 
-  \item{sg.neg.factor}{ impact factor of \_negative\_ significant genes on the classifaction,default:  -1  } 
+  \item{sg.pos.factor}{ impact factor of \bold{positive} significant genes on the classifaction, default:  1  } 
+  \item{sg.neg.factor}{ impact factor of \bold{negative} significant genes on the classifaction,default:  -1  } 
   \item{corr}{ are the genes correalted to each other? (default FALSE). see Details}
   \item{corr.factor}{ correlation factorfor genes, between 0 and 1 (default 0.8)   }
 

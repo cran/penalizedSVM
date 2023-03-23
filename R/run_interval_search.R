@@ -42,7 +42,7 @@
 						 x.svm=x, y.svm=y, class.weights=class.weights, maxIter=maxIter, inner.val.method=inner.val.method,
 						 cross.inner=cross.inner )
 
-	# if we have several models mit minimal gacv value, chose those with min number of features (genes)
+	# if we have several models with minimal gacv value, chose those with min number of features (genes)
 	# by equal number of genes --> take the first modell 
 		
 	# take the calculated final model

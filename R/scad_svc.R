@@ -13,7 +13,7 @@ scadsvc <- function(lambda1 = 0.01, x, y, a = 3.7, tol= 10^(-4), class.weights= 
 	# By Axel Benner (15.03.2007)
 	# original script: http://www4.stat.ncsu.edu/~hzhang/paper/scadsvc.m
 	
-	# SVM mit variable selection (clone selection) using scad penalty.
+	# SVM with variable selection (clone selection) using scad penalty.
 	
 
 	# checks

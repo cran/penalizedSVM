@@ -6,7 +6,7 @@
 \alias{scad_L2.svc}
 
 
-\title{  Fits  SVM mit variable selection using penalties.}
+\title{  Fits  SVM with variable selection using penalties.}
 \description{
   Fits  SVM with variable selection (clone selection) using penalties SCAD,  L1 norm, Elastic Net (L1 + L2 norms) and ELastic SCAD (SCAD + L1 norm). 
   Additionally tuning parameter search is presented by two approcaches: fixed grid or interval search.
