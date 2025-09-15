@@ -15,7 +15,7 @@ svmfs <- function (x, ...)
 				# define range for lambda1,2 for interval search
 				bounds=NULL, 
 				# parms.coding="none" or "log2"
-				parms.coding= c("log2","none"),
+				parms.coding= c("log2", "none"),
 				# internal parameter for DIRECT
 				maxevals=500, 
 				### valuidation settings
@@ -110,7 +110,18 @@ svmfs <- function (x, ...)
 				paste(possible.fs, collapse=", ")))
 
 	print(paste("feature selection method is", fs.method))
+
+	possible.parms.coding= c("log2", "none")
 	
+	if(all(parms.coding==possible.parms.coding)){parms.coding=c("log2")}
+	if(length(parms.coding)>1) stop(paste("You have to specify only one of the following parameter codings:", 
+	                                      paste(possible.parms.coding, collapse=", ")))
+
+	if (!(parms.coding %in% possible.parms.coding ))  stop(paste("You have to use one of the following parameter codings:", 
+	paste(possible.parms.coding, collapse=", ")))
+
+	
+		
 #	# if cross.outer>0 use outer cv !!!!!          TODO
 #	if(cross.outer>0){
 #		print(paste("Apply outer ", cross.outer, "-fold cross validation ", sep="" ))

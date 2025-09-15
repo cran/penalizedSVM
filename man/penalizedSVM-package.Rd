@@ -24,7 +24,7 @@ The main function is \code{\link{svmfs}, see the documentation file with example
 }
 \author{ Natalia Becker, Axel Benner, Wiebke Werft 
 
-Maintainer: \enc{Frederic}{Fr\'ed\'eric} Bertrand (\email{frederic.bertrand@utt.fr})
+Maintainer: \enc{Frederic}{Fr\'ed\'eric} Bertrand (\email{frederic.bertrand@lecnam.net})
 }
 
 

@@ -1,6 +1,6 @@
-aeb302ddcd42cccf6e92b2a17d991ad5 *DESCRIPTION
+29473df58d7d9226557ea35f50c480c3 *DESCRIPTION
 2e84e60d29aef38754578e1367b27efa *NAMESPACE
-20ac72d431111c6661528274e64a1fd5 *NEWS.md
+67c1647735b56301b870479646e96c10 *NEWS.md
 e2b8ca1ddb5b329cc425dc8778cb58fb *R/Direct.R
 350056cd7753630cdbc43834e8f762f8 *R/EPSGO.R
 4de5b5682835350bf71dbd3cb1b9e950 *R/ExpImprovement.R
@@ -24,11 +24,14 @@ d29ea0c9c7de18a8ef79ae312afb2a99 *R/scad_svc.R
 c57d825231fed9a6d2d7ef44fb38538d *R/simulate.data.R
 f30e3fc10d1c90d4746f47ccb5531b6b *R/sortmat.R
 ccc94b372cb428d4368322cecd0f9ea9 *R/svm.1norm.R
-f5c06592b4867e6df94cab984d977a10 *R/svm.fs.R
+b92a688a06d3eef7fdf6ee62b687c2f8 *R/svm.fs.R
+cc458a54efc26e5f2b8b57de30bae752 *README.md
+289bdfda8bf8dd62bbcf7db460dfffec *inst/CITATION
+d3ac290df0b200141da42d1510be8022 *inst/_pkgdown.yml
 35ff1dccfbbae104717477ac909a4ff1 *man/EPSGO.Rd
 396fe9777c2a35e8caa1f604bea9721d *man/findgacv.scad.Rd
 56bbebbae2267ec5e5d4f6eb2cbe71c0 *man/penalizedSVM-internal.Rd
-5dc98f42d058ca90f73930dce413c758 *man/penalizedSVM-package.Rd
+31ecf78d6977ebad78cfada27b9d1f1f *man/penalizedSVM-package.Rd
 cb6241bf2a1fa425c8ec20e9615336b1 *man/plot.EPSGO.parms.Rd
 565a5f80cfe8c3264e63a6bd4362b749 *man/predict.Rd
 fbf5c56eb44b0842db937ed540ff022f *man/print.Rd
@@ -37,3 +40,10 @@ c7e52ceae897e1860661b83e6aa6ab28 *man/scadsvc.Rd
 66fbafd09e3fab9dedf4c167cefd706a *man/sortmat.Rd
 3ec86822acbe15c67469cca7c0ce30e3 *man/svm.1norm.Rd
 392e552ec07652180dc7c657c8e7871e *man/svmfs.Rd
+5fb3f5ad0de924f51716457d636d71d5 *tests/testthat.R
+7268e748aa908309b2643153c05d57ed *tests/testthat/Rplots.pdf
+235e7bff52f1ec0a085ef1f361b9b826 *tests/testthat/test-exports.R
+a66edfbb5045a0b63bc33e5d11b23843 *tests/testthat/test-load.R
+c11f98cb82b1ff7030dee0c1cf653eef *tests/testthat/test-svmfs-behavior.R
+9f2412253e0bdbd72a56afc02819df03 *tests/testthat/test-svmfs-more-behavior.R
+3eaa7dd8ccb66ec975a20de8fe9099d3 *tests/testthat/test-todo.R

@@ -1,0 +1,28 @@
+citHeader("To cite penalizedSVM in publications use:")
+
+titl <- meta$Title
+year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date)
+vers <- paste("R package version", meta$Version)
+doi <- paste0("10.32614/CRAN.package.", meta$Package)
+urldoi <- paste0("https://doi.org/", doi)
+
+bibentry(bibtype="Manual",
+         title = titl,
+         author = c(person(given = "Natalia",
+                        family = "Becker"),
+                 person(given = "Wiebke",
+                        family = "Werft"),
+                 person(given = "Axel",
+                        family = "Benner"),
+                 person(given = "Frederic",
+                        family = "Bertrand")),
+         year         = year,
+         note         = vers,
+         url          = "https://github.com/fbertran/penalizedSVM",
+         doi          = doi,
+         textVersion = 
+         paste("Natalia Becker, Wiebke Werft, Axel Benner and Frederic Bertrand (",year ,"). ", 
+               titl, ", ", vers, ". doi:", doi, ".", sep=""
+               )
+)
+
